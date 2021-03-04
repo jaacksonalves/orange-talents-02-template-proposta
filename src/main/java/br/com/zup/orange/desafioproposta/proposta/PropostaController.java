@@ -28,6 +28,7 @@ public class PropostaController {
         if (request.validaDocumentoNaoCadastrado(em)) {
             Proposta novaProposta = request.toModel(em);
             em.persist(novaProposta);
+
             URI uri = uriComponentsBuilder.path("/api/propostas/{id}").buildAndExpand(novaProposta.getId()).toUri();
 
             return ResponseEntity.status(201).location(uri).build();
