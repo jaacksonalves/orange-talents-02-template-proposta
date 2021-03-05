@@ -69,14 +69,7 @@ public class Proposta {
         return new AnaliseRequest(this.id, this.documento, this.nome);
     }
 
-    public void setStatus(AnaliseResponse analiseStatus) {
-        AnaliseStatus statusResultado = analiseStatus.getStatusResultado();
-        if (statusResultado == AnaliseStatus.COM_RESTRICAO) {
-            this.status = PropostaStatus.NAO_ELEGIVEL;
-        } else if (statusResultado == AnaliseStatus.SEM_RESTRICAO) {
-            this.status = PropostaStatus.ELEGIVEL;
-        }
+    public void setStatus(PropostaStatus status) {
+        this.status = status;
     }
-
-
 }

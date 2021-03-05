@@ -15,7 +15,19 @@ public class AnaliseResponse {
         this.idProposta = idProposta;
     }
 
+    public String getDocumento() {
+        return documento;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
     public AnaliseStatus getStatusResultado() {
         return statusResultado;
+    }
+
+    public Long getIdProposta() {
+        return idProposta;
     }
 }
