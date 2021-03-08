@@ -4,7 +4,6 @@ import br.com.zup.orange.desafioproposta.proposta.NovaPropostaRequest;
 import br.com.zup.orange.desafioproposta.proposta.Proposta;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -93,8 +90,8 @@ public class PropostaControllerTest {
         NovaPropostaRequest novaPropostaRequestCpf = new NovaPropostaRequest("10648515680", "cpf@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
         NovaPropostaRequest novaPropostaRequestCnpj = new NovaPropostaRequest("78506687000129", "cnpj@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
 
-        em.persist(novaPropostaRequestCpf.toModel(em));
-        em.persist(novaPropostaRequestCnpj.toModel(em));
+        em.persist(novaPropostaRequestCpf.toModel());
+        em.persist(novaPropostaRequestCnpj.toModel());
 
         //Tenta cadastrar nova proposta com Cpf ja cadastrado
         mockMvc.perform(post("/api/propostas").contentType(MediaType.APPLICATION_JSON).content(toJson(novaPropostaRequestCpf)))

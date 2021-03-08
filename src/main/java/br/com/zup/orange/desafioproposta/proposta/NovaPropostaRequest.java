@@ -15,19 +15,19 @@ public class NovaPropostaRequest {
 
     @CpfOuCnpj(message = "Deve preencher com um CPF ou CNPJ válido!")
     @NotBlank(message = "Precisa ser preenchido")
-    private final String documento;
+    private String documento;
     @NotBlank(message = "Precisa ser preenchido")
     @Email(message = "Deve preencher com email válido")
-    private final String email;
+    private String email;
     @NotBlank(message = "Precisa ser preenchido")
-    private final String nome;
+    private String nome;
     @NotBlank(message = "Precisa ser preenchido")
-    private final String endereco;
+    private String endereco;
     @NotNull(message = "Precisa ser preenchido")
     @Positive(message = "Não pode preencher com valor negativo")
-    private final BigDecimal salario;
+    private BigDecimal salario;
 
-    public NovaPropostaRequest(@NotBlank String documento, @NotBlank @Email String email, @NotBlank String nome, @NotBlank String endereco, @NotNull @Positive BigDecimal salario) {
+    public NovaPropostaRequest(@NotBlank(message = "Precisa ser preenchido") String documento, @NotBlank(message = "Precisa ser preenchido") @Email(message = "Deve preencher com email válido") String email, @NotBlank(message = "Precisa ser preenchido") String nome, @NotBlank(message = "Precisa ser preenchido") String endereco, @NotNull(message = "Precisa ser preenchido") @Positive(message = "Não pode preencher com valor negativo") BigDecimal salario) {
         this.documento = documento;
         this.email = email;
         this.nome = nome;
@@ -55,18 +55,10 @@ public class NovaPropostaRequest {
         return salario;
     }
 
-
     //Só podemos usar o toModel após passar pelo validador de documento existente
-    public Proposta toModel(EntityManager em) {
-        Assert.isTrue(this.validaDocumentoNaoCadastrado(em), "Documento já está cadastrado");
+    public Proposta toModel() {
         return new Proposta(documento, email, nome, endereco, salario);
     }
 
-    //Verifica se o documento já está cadastrado no sistema, pois não podemos ter duas propostas pro mesmo documento
-    public boolean validaDocumentoNaoCadastrado(EntityManager em) {
-        List<?> listaPropostasPorDocumento = em.createQuery("select p from Proposta p where p.documento=:documento")
-                .setParameter("documento", this.documento).getResultList();
 
-        return listaPropostasPorDocumento.isEmpty();
-    }
 }

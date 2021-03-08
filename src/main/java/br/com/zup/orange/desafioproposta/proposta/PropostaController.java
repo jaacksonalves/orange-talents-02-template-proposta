@@ -25,8 +25,8 @@ import java.net.URI;
 @RequestMapping("/api/propostas")
 public class PropostaController {
 
-    @PersistenceContext
-    private EntityManager em;
+    @Autowired
+    private PropostaRepository propostaRepository;
     @Autowired
     private AnaliseProposta analiseProposta;
 
@@ -34,23 +34,23 @@ public class PropostaController {
     @PostMapping
     public ResponseEntity<?> criaProposta(@Valid @RequestBody NovaPropostaRequest request, UriComponentsBuilder uriComponentsBuilder) {
         //verifica se o documento está cadastrado ou não no banco de dados, pois não pode haver mais de uma proposta pro mesmo documento
-        if (request.validaDocumentoNaoCadastrado(em)) {
-            Proposta novaProposta = request.toModel(em);
-            em.persist(novaProposta);
-            URI uri = uriComponentsBuilder.path("/api/propostas/{id}").buildAndExpand(novaProposta.getId()).toUri();
-
-            try {
-                AnaliseResponse analiseResponse = analiseProposta.analiseStatus(novaProposta.toAnaliseRequest());
-                novaProposta.setStatus(PropostaStatus.analiseToProposta(analiseResponse.getStatusResultado()));
-                em.merge(novaProposta);
-                return ResponseEntity.created(uri).body("Elegível");
-            } catch (Exception e) {
-                novaProposta.setStatus(PropostaStatus.NAO_ELEGIVEL);
-                return ResponseEntity.unprocessableEntity().body("Não Elegível");
-            }
-
+        if (propostaRepository.existsByDocumento(request.getDocumento())) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Já existe proposta cadastrada para esse documento!");
         }
-        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Já existe proposta cadastrada para o documento inserido: " + request.getDocumento());
+        Proposta novaProposta = request.toModel();
+        propostaRepository.save(novaProposta);
+        URI uri = uriComponentsBuilder.path("/api/propostas/{id}").buildAndExpand(novaProposta.getId()).toUri();
+
+        try {
+            AnaliseResponse respostaAnalise = analiseProposta.analiseStatus(novaProposta.toAnaliseRequest());
+            novaProposta.setStatus(PropostaStatus.analiseToProposta(respostaAnalise.getStatusResultado()));
+
+            return ResponseEntity.created(uri).build();
+        } catch (FeignException e) {
+            novaProposta.setStatus(PropostaStatus.NAO_ELEGIVEL);
+            return ResponseEntity.unprocessableEntity().location(uri).build();
+        }
+
     }
 
 
