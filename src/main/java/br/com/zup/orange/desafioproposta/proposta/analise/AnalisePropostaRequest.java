@@ -1,15 +1,18 @@
 package br.com.zup.orange.desafioproposta.proposta.analise;
 
-public class AnaliseRequest {
+import br.com.zup.orange.desafioproposta.proposta.Proposta;
+
+public class AnalisePropostaRequest {
 
     private final String documento;
     private final String nome;
     private final Long idProposta;
 
-    public AnaliseRequest(Long idProposta, String documento, String nome) {
-        this.idProposta = idProposta;
-        this.documento = documento;
-        this.nome = nome;
+
+    public AnalisePropostaRequest(Proposta novaProposta) {
+        this.documento = novaProposta.getDocumento();
+        this.nome = novaProposta.getNome();
+        this.idProposta = novaProposta.getId();
     }
 
     public Long getIdProposta() {
