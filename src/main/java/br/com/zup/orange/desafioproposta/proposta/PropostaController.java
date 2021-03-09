@@ -18,7 +18,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/propostas")
@@ -57,21 +56,21 @@ public class PropostaController {
 
 
     @GetMapping("/{id}")
+    @Transactional(readOnly = true)
     public ResponseEntity<PropostaResponse> consultaProposta(@PathVariable("id") Long idProposta) {
-        Optional<Proposta> proposta = propostaRepository.findById(idProposta);
-        if (proposta.isPresent()) {
-            Proposta propostaEcontrada = propostaRepository.getOne(idProposta);
-            return ResponseEntity.ok(new PropostaResponse(propostaEcontrada));
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id não encontrado");
+        Proposta proposta = propostaRepository.findById(idProposta).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Proposta não encontrada"));
+
+        return ResponseEntity.ok(new PropostaResponse(proposta));
 
     }
 
 
     //Verifica se propostas elegíveis já tem cartão cadastrado, caso não tenha, cadastra um cartão para ela.
+    @Transactional
     @Scheduled(fixedDelay = 5000)
     public void criaCartao() {
-        List<Proposta> listaPropostaSemCartao = propostaRepository.findByStatusAndIdCartaoOrIdCartao(PropostaStatus.ELEGIVEL, null, "");
+        List<Proposta> listaPropostaSemCartao = propostaRepository.findFirst10ByStatusAndIdCartaoOrIdCartao(PropostaStatus.ELEGIVEL, null, "");
 
         listaPropostaSemCartao.forEach(propostas -> {
             Proposta proposta = listaPropostaSemCartao.get(0);
@@ -80,14 +79,6 @@ public class PropostaController {
             proposta.setIdCartao(cartaoResposta.getId());
             propostaRepository.save(proposta);
         });
-
-
-//        if (!listaPropostaSemCartao.isEmpty()) {
-//            CartaoResposta cartaoResposta = conectorCartao.cartaoResposta(listaPropostaSemCartao.get(0).toAnaliseRequest());
-//            Proposta proposta = listaPropostaSemCartao.get(0);
-//            proposta.setIdCartao(cartaoResposta.getId());
-//            propostaRepository.save(proposta);
-//        }
 
     }
 
