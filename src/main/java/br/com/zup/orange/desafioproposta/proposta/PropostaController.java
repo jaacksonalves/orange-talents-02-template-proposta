@@ -1,7 +1,5 @@
 package br.com.zup.orange.desafioproposta.proposta;
 
-import br.com.zup.orange.desafioproposta.cartao.CartaoResposta;
-import br.com.zup.orange.desafioproposta.cartao.ConectorCartao;
 import br.com.zup.orange.desafioproposta.proposta.analise.AnalisePropostaRequest;
 import br.com.zup.orange.desafioproposta.proposta.analise.AnaliseResponse;
 import br.com.zup.orange.desafioproposta.proposta.analise.ConectorAnaliseProposta;
@@ -9,7 +7,6 @@ import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,7 +14,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/propostas")
@@ -27,10 +23,11 @@ public class PropostaController {
     private PropostaRepository propostaRepository;
     @Autowired
     private ConectorAnaliseProposta conectorAnaliseProposta;
-    @Autowired
-    private ConectorCartao conectorCartao;
 
 
+    /*
+    Cadastra nova proposta no sistema
+     */
     @Transactional
     @PostMapping
     public ResponseEntity<?> criaProposta(@Valid @RequestBody NovaPropostaRequest request, UriComponentsBuilder uriComponentsBuilder) {
@@ -55,32 +52,21 @@ public class PropostaController {
     }
 
 
+    /*
+    Exibe uma proposta específica pelo ID
+     */
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    public ResponseEntity<PropostaResponse> consultaProposta(@PathVariable("id") Long idProposta) {
+    public ResponseEntity<String> consultaProposta(@PathVariable("id") Long idProposta) {
         Proposta proposta = propostaRepository.findById(idProposta).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Proposta não encontrada"));
 
-        return ResponseEntity.ok(new PropostaResponse(proposta));
+        return ResponseEntity.ok(new PropostaResponse(proposta).toString());
 
     }
 
 
-    //Verifica se propostas elegíveis já tem cartão cadastrado, caso não tenha, cadastra um cartão para ela.
-    @Transactional
-    @Scheduled(fixedDelay = 5000)
-    public void criaCartao() {
-        List<Proposta> listaPropostaSemCartao = propostaRepository.findFirst10ByStatusAndIdCartaoOrIdCartao(PropostaStatus.ELEGIVEL, null, "");
-
-        listaPropostaSemCartao.forEach(propostas -> {
-            Proposta proposta = listaPropostaSemCartao.get(0);
-            CartaoResposta cartaoResposta = conectorCartao.cartaoResposta(new AnalisePropostaRequest(proposta));
-
-            proposta.setIdCartao(cartaoResposta.getId());
-            propostaRepository.save(proposta);
-        });
-
-    }
+    //A Classe que cria e atrela um numero de cartão a uma proposta foi criada separadamente: AtrelaCartaoAProposta.class
 
 
 }

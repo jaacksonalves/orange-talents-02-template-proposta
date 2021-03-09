@@ -1,10 +1,4 @@
-package br.com.zup.orange.desafioproposta.cartao;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+package br.com.zup.orange.desafioproposta.proposta.cartao;
 
 public class CartaoResposta {
 

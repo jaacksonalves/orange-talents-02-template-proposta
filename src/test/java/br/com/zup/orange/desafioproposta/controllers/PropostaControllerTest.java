@@ -2,6 +2,8 @@ package br.com.zup.orange.desafioproposta.controllers;
 
 import br.com.zup.orange.desafioproposta.proposta.NovaPropostaRequest;
 import br.com.zup.orange.desafioproposta.proposta.Proposta;
+import br.com.zup.orange.desafioproposta.proposta.PropostaRepository;
+import br.com.zup.orange.desafioproposta.proposta.PropostaResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -10,27 +12,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class PropostaControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-    @PersistenceContext
-    private EntityManager em;
+    @Autowired
+    private PropostaRepository repository;
     @Autowired
     private ObjectMapper mapper;
 
@@ -43,7 +46,7 @@ public class PropostaControllerTest {
     @DisplayName("Deve criar proposta contendo, cpf ou cnpj, email, nome, endereço, salário. nenhum campo pode ser branco ou nulo, e documento/email tem de ser válidos" +
             "deve retornar status 201 quando criado E devolve header com a location do objeto criado")
     public void deveCriarProposta() throws Exception {
-        NovaPropostaRequest novaPropostaRequestCpf = new NovaPropostaRequest("10648515680", "cpf@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
+        NovaPropostaRequest novaPropostaRequestCpf = new NovaPropostaRequest("18270623040", "cpf@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
         NovaPropostaRequest novaPropostaRequestCnpj = new NovaPropostaRequest("78506687000129", "cnpj@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
 
         //Cadastra nova proposta completa e CPF como documento
@@ -55,8 +58,8 @@ public class PropostaControllerTest {
                 .andExpect(status().is(201)).andReturn().getResponse().getHeader("Location");
 
 
-        Proposta novaPropostaCpf = (Proposta) em.createQuery("select p from Proposta p where p.email=:email").setParameter("email", "cpf@email.com").getResultList().get(0);
-        Proposta novaPropostaCnpj = (Proposta) em.createQuery("select p from Proposta p where p.email=:email").setParameter("email", "cnpj@email.com").getResultList().get(0);
+        Proposta novaPropostaCpf = repository.findByEmail(novaPropostaRequestCpf.getEmail());
+        Proposta novaPropostaCnpj = repository.findByEmail(novaPropostaRequestCnpj.getEmail());
 
         assertEquals(locationCpf, "http://localhost/api/propostas/" + novaPropostaCpf.getId());
         assertEquals(locationCnpj, "http://localhost/api/propostas/" + novaPropostaCnpj.getId());
@@ -87,11 +90,11 @@ public class PropostaControllerTest {
     @DisplayName("Não deve criar propostas com documento duplicado, deve retornar 422")
     public void naoDeveCriarPropostaComDocumentoJaCadastrado() throws Exception {
 
-        NovaPropostaRequest novaPropostaRequestCpf = new NovaPropostaRequest("10648515680", "cpf@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
+        NovaPropostaRequest novaPropostaRequestCpf = new NovaPropostaRequest("18270623040", "cpf@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
         NovaPropostaRequest novaPropostaRequestCnpj = new NovaPropostaRequest("78506687000129", "cnpj@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
 
-        em.persist(novaPropostaRequestCpf.toModel());
-        em.persist(novaPropostaRequestCnpj.toModel());
+        repository.save(novaPropostaRequestCpf.toModel());
+        repository.save(novaPropostaRequestCnpj.toModel());
 
         //Tenta cadastrar nova proposta com Cpf ja cadastrado
         mockMvc.perform(post("/api/propostas").contentType(MediaType.APPLICATION_JSON).content(toJson(novaPropostaRequestCpf)))
@@ -102,11 +105,33 @@ public class PropostaControllerTest {
                 .andExpect(status().is(422));
 
 
-        List<?> listaPropostasCpf = em.createQuery("select p from Proposta p where p.email=:email").setParameter("email", "cpf@email.com").getResultList();
-        List<?> listaPropostasCnpj = em.createQuery("select p from Proposta p where p.email=:email").setParameter("email", "cnpj@email.com").getResultList();
+    }
 
-        assertTrue(listaPropostasCpf.size() <= 1);
-        assertTrue(listaPropostasCnpj.size() <= 1);
+    @Test
+    @DisplayName("Deve retornar informações de uma proposta, pelo id inserido na URL. Retorno 200.")
+    public void deveRetornarInformacoesDaPropostaPorId() throws Exception {
+
+        NovaPropostaRequest novaPropostaRequestCpf = new NovaPropostaRequest("18270623040", "cpf@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
+        Proposta proposta = novaPropostaRequestCpf.toModel();
+        repository.save(proposta);
+
+
+        String contentAsString = mockMvc.perform(get("/api/propostas/" + proposta.getId()))
+                .andExpect(status().is(200)).andReturn().getResponse().getContentAsString();
+
+        PropostaResponse propostaResponse = new PropostaResponse(proposta);
+
+        assertEquals(propostaResponse.toString(), contentAsString);
+
+    }
+
+
+    @Test
+    @DisplayName("Não deve retornar informações de proposta com Id inserido na URL inexistente. Status 404")
+    public void naoDeveRetornarInformacoesPropostaComIdInexistente() throws Exception {
+
+        mockMvc.perform(get("/api/propostas/100000000")).andExpect(status().is(404));
+
 
     }
 

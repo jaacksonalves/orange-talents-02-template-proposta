@@ -2,7 +2,6 @@ package br.com.zup.orange.desafioproposta.proposta;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.LockModeType;
 import java.util.List;
@@ -15,6 +14,6 @@ public interface PropostaRepository extends JpaRepository<Proposta, Long> {
     @Lock(LockModeType.PESSIMISTIC_READ)
     List<Proposta> findFirst10ByStatusAndIdCartaoOrIdCartao(PropostaStatus elegivel, Object o, String s);
 
-
+    Proposta findByEmail(String email);
 
 }

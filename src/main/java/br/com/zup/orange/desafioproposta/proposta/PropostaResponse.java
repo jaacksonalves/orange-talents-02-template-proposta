@@ -57,4 +57,17 @@ public class PropostaResponse {
         return idCartao;
     }
 
+    @Override
+    public String toString() {
+        return "PropostaResponse{" +
+                "id=" + id +
+                ", documento='" + documento + '\'' +
+                ", email='" + email + '\'' +
+                ", nome='" + nome + '\'' +
+                ", endereco='" + endereco + '\'' +
+                ", salario=" + salario +
+                ", status=" + status +
+                ", idCartao='" + idCartao + '\'' +
+                '}';
+    }
 }

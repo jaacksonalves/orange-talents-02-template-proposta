@@ -1,4 +1,4 @@
-package br.com.zup.orange.desafioproposta.cartao;
+package br.com.zup.orange.desafioproposta.proposta.cartao;
 
 
 import br.com.zup.orange.desafioproposta.proposta.analise.AnalisePropostaRequest;
