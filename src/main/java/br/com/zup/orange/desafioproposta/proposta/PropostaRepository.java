@@ -12,7 +12,7 @@ public interface PropostaRepository extends JpaRepository<Proposta, Long> {
 
     //Consulta os 10 primeiros resultados, de propostas elegiveis e sem cartão cadastrado
     @Lock(LockModeType.PESSIMISTIC_READ)
-    List<Proposta> findFirst10ByStatusAndIdCartaoOrIdCartao(PropostaStatus elegivel, Object o, String s);
+    List<Proposta> findFirst10ByStatusAndIdCartaoIsNullOrIdCartao(PropostaStatus elegivel, String s);
 
     Proposta findByEmail(String email);
 

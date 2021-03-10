@@ -22,7 +22,7 @@ public class AtrelaCartaoAProposta {
     @Transactional
     @Scheduled(fixedDelay = 5000)
     public void criaCartao() {
-        List<Proposta> listaPropostaSemCartao = propostaRepository.findFirst10ByStatusAndIdCartaoOrIdCartao(PropostaStatus.ELEGIVEL, null, "");
+        List<Proposta> listaPropostaSemCartao = propostaRepository.findFirst10ByStatusAndIdCartaoIsNullOrIdCartao(PropostaStatus.ELEGIVEL, "");
 
         if (!listaPropostaSemCartao.isEmpty()){
             listaPropostaSemCartao.forEach(propostas -> {

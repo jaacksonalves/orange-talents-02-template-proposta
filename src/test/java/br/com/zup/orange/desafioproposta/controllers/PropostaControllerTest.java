@@ -130,10 +130,10 @@ public class PropostaControllerTest {
     @DisplayName("Não deve retornar informações de proposta com Id inserido na URL inexistente. Status 404")
     public void naoDeveRetornarInformacoesPropostaComIdInexistente() throws Exception {
 
-        mockMvc.perform(get("/api/propostas/100000000")).andExpect(status().is(404));
-
-
+        mockMvc.perform(get("/api/propostas/20")).andExpect(status().is(404));
     }
+
+
 
 
 }

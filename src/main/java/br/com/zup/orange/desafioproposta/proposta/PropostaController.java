@@ -1,7 +1,7 @@
 package br.com.zup.orange.desafioproposta.proposta;
 
 import br.com.zup.orange.desafioproposta.proposta.analise.AnalisePropostaRequest;
-import br.com.zup.orange.desafioproposta.proposta.analise.AnaliseResponse;
+import br.com.zup.orange.desafioproposta.proposta.analise.AnalisePropostaResponse;
 import br.com.zup.orange.desafioproposta.proposta.analise.ConectorAnaliseProposta;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +40,14 @@ public class PropostaController {
         URI uri = uriComponentsBuilder.path("/api/propostas/{id}").buildAndExpand(novaProposta.getId()).toUri();
 
         try {
-            AnaliseResponse respostaAnalise = conectorAnaliseProposta.analiseStatus(new AnalisePropostaRequest(novaProposta));
+            AnalisePropostaResponse respostaAnalise = conectorAnaliseProposta.analiseStatus(new AnalisePropostaRequest(novaProposta));
             novaProposta.setStatus(PropostaStatus.analiseToProposta(respostaAnalise.getStatusResultado()));
 
             return ResponseEntity.created(uri).build();
         } catch (FeignException e) {
             novaProposta.setStatus(PropostaStatus.NAO_ELEGIVEL);
 
-            return ResponseEntity.unprocessableEntity().location(uri).build();
+            return ResponseEntity.unprocessableEntity().location(uri).body("Proposta Não Elegível");
         }
     }
 
@@ -57,7 +57,7 @@ public class PropostaController {
      */
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    public ResponseEntity<String> consultaProposta(@PathVariable("id") Long idProposta) {
+    public ResponseEntity<?> consultaProposta(@PathVariable("id") Long idProposta) {
         Proposta proposta = propostaRepository.findById(idProposta).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Proposta não encontrada"));
 
