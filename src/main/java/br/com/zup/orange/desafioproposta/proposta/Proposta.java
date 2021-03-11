@@ -1,5 +1,7 @@
 package br.com.zup.orange.desafioproposta.proposta;
 
+import br.com.zup.orange.desafioproposta.cartao.Cartao;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 
@@ -18,7 +20,8 @@ public class Proposta {
     private BigDecimal salario;
     @Enumerated(EnumType.STRING)
     private PropostaStatus status;
-    private String idCartao;
+    @OneToOne
+    private Cartao cartao;
 
 
     public Proposta(String documento, String email, String nome, String endereco, BigDecimal salario) {
@@ -65,13 +68,11 @@ public class Proposta {
         this.status = status;
     }
 
-    public String getIdCartao() {
-        return idCartao;
+    public void setCartao(Cartao cartao) {
+        this.cartao = cartao;
     }
 
-    public void setIdCartao(String id) {
-        this.idCartao = id;
+    public Cartao getCartao() {
+        return cartao;
     }
-
-
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -30,14 +31,14 @@ public class PropostaController {
      */
     @Transactional
     @PostMapping
-    public ResponseEntity<?> criaProposta(@Valid @RequestBody NovaPropostaRequest request, UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<?> criaProposta(@Valid @RequestBody NovaPropostaRequest request) {
         //verifica se o documento está cadastrado ou não no banco de dados, pois não pode haver mais de uma proposta pro mesmo documento
         if (propostaRepository.existsByDocumento(request.getDocumento())) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Já existe proposta cadastrada para esse documento!");
         }
         Proposta novaProposta = request.toModel();
         propostaRepository.save(novaProposta);
-        URI uri = uriComponentsBuilder.path("/api/propostas/{id}").buildAndExpand(novaProposta.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(novaProposta.getId()).toUri();
 
         try {
             AnalisePropostaResponse respostaAnalise = conectorAnaliseProposta.analiseStatus(new AnalisePropostaRequest(novaProposta));

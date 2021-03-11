@@ -1,4 +1,4 @@
-package br.com.zup.orange.desafioproposta.proposta.cartao;
+package br.com.zup.orange.desafioproposta.cartao;
 
 
 import br.com.zup.orange.desafioproposta.proposta.analise.AnalisePropostaRequest;
@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface ConectorCartao {
 
     @PostMapping("/cartoes")
-    CartaoResposta cartaoResposta (AnalisePropostaRequest request);
+    ConectorCartaoResponse apiToCartaoResposta(AnalisePropostaRequest request);
 
 }
