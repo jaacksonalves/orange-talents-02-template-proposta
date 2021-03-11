@@ -1,11 +1,9 @@
 package br.com.zup.orange.desafioproposta.controllers;
 
-import br.com.zup.orange.desafioproposta.proposta.NovaPropostaRequest;
-import br.com.zup.orange.desafioproposta.proposta.Proposta;
-import br.com.zup.orange.desafioproposta.proposta.PropostaRepository;
-import br.com.zup.orange.desafioproposta.proposta.PropostaResponse;
+import br.com.zup.orange.desafioproposta.proposta.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -33,9 +35,11 @@ public class PropostaControllerTest {
     @Autowired
     MockMvc mockMvc;
     @Autowired
-    private PropostaRepository repository;
+    private PropostaRepository propostaRepository;
     @Autowired
     private ObjectMapper mapper;
+    @PersistenceContext
+    private EntityManager em;
 
     private String toJson(Object form) throws JsonProcessingException {
         return mapper.writeValueAsString(form);
@@ -58,8 +62,8 @@ public class PropostaControllerTest {
                 .andExpect(status().is(201)).andReturn().getResponse().getHeader("Location");
 
 
-        Proposta novaPropostaCpf = repository.findByEmail(novaPropostaRequestCpf.getEmail());
-        Proposta novaPropostaCnpj = repository.findByEmail(novaPropostaRequestCnpj.getEmail());
+        Proposta novaPropostaCpf = propostaRepository.findByEmail(novaPropostaRequestCpf.getEmail());
+        Proposta novaPropostaCnpj = propostaRepository.findByEmail(novaPropostaRequestCnpj.getEmail());
 
         assertEquals(locationCpf, "http://localhost/api/propostas/" + novaPropostaCpf.getId());
         assertEquals(locationCnpj, "http://localhost/api/propostas/" + novaPropostaCnpj.getId());
@@ -93,8 +97,8 @@ public class PropostaControllerTest {
         NovaPropostaRequest novaPropostaRequestCpf = new NovaPropostaRequest("18270623040", "cpf@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
         NovaPropostaRequest novaPropostaRequestCnpj = new NovaPropostaRequest("78506687000129", "cnpj@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
 
-        repository.save(novaPropostaRequestCpf.toModel());
-        repository.save(novaPropostaRequestCnpj.toModel());
+        propostaRepository.save(novaPropostaRequestCpf.toModel());
+        propostaRepository.save(novaPropostaRequestCnpj.toModel());
 
         //Tenta cadastrar nova proposta com Cpf ja cadastrado
         mockMvc.perform(post("/api/propostas").contentType(MediaType.APPLICATION_JSON).content(toJson(novaPropostaRequestCpf)))
@@ -113,7 +117,7 @@ public class PropostaControllerTest {
 
         NovaPropostaRequest novaPropostaRequestCpf = new NovaPropostaRequest("18270623040", "cpf@email.com", "Jackson Alves", "Endereco completo", new BigDecimal(2500));
         Proposta proposta = novaPropostaRequestCpf.toModel();
-        repository.save(proposta);
+        propostaRepository.save(proposta);
 
 
         String contentAsString = mockMvc.perform(get("/api/propostas/" + proposta.getId()))
@@ -133,7 +137,32 @@ public class PropostaControllerTest {
         mockMvc.perform(get("/api/propostas/20")).andExpect(status().is(404));
     }
 
+    @Test
+    @DisplayName("Deve criar um cartão para propostas elegíveis")
+    public void deveCriarCartaoParaPropostasElegiveis() throws Exception {
 
+        NovaPropostaRequest novaPropostaRequestCpf = new NovaPropostaRequest("18270623040", "cpf@email.com", "Jackson Alves",
+                "Endereco completo", new BigDecimal(2500));
+        NovaPropostaRequest novaPropostaRequestCnpj = new NovaPropostaRequest("78506687000129", "cnpj@email.com", "Jackson Alves",
+                "Endereco completo", new BigDecimal(2500));
+
+        mockMvc.perform(post("/api/propostas").contentType(MediaType.APPLICATION_JSON).content(toJson(novaPropostaRequestCpf)))
+                .andExpect(status().is(201));
+
+
+
+        mockMvc.perform(post("/api/propostas").contentType(MediaType.APPLICATION_JSON).content(toJson(novaPropostaRequestCnpj)))
+                .andExpect(status().is(201));
+
+
+        Thread.sleep(10000);
+        Proposta propostaCpf = propostaRepository.findByEmail("cpf@email.com");
+
+        assertNotNull(propostaCpf.getCartao());
+
+
+
+    }
 
 
 }
