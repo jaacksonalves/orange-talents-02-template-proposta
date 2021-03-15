@@ -1,6 +1,7 @@
 package br.com.zup.orange.desafioproposta.cartao;
 
 import br.com.zup.orange.desafioproposta.biometria.Biometria;
+import br.com.zup.orange.desafioproposta.cartao.aviso.AvisoViagem;
 import br.com.zup.orange.desafioproposta.cartao.bloqueio.Bloqueio;
 import br.com.zup.orange.desafioproposta.proposta.Proposta;
 
@@ -25,6 +26,8 @@ public class Cartao {
     private Proposta proposta;
     @OneToMany(mappedBy = "cartao")
     private List<Biometria> biometrias;
+    @OneToMany(mappedBy = "cartao")
+    private List<AvisoViagem> avisosViagem;
 
 
     public Cartao(String numeroCartao, LocalDateTime emitidoEm, String titular, List<Bloqueio> bloqueios, BigDecimal limite, Proposta proposta) {
