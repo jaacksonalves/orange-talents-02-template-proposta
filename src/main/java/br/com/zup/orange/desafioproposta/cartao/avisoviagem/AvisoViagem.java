@@ -1,4 +1,4 @@
-package br.com.zup.orange.desafioproposta.cartao.aviso;
+package br.com.zup.orange.desafioproposta.cartao.avisoviagem;
 
 import br.com.zup.orange.desafioproposta.cartao.Cartao;
 
@@ -19,12 +19,14 @@ public class AvisoViagem {
     private String ipSolicitante;
     @Column(updatable = false)
     private final LocalDateTime instanteAviso = LocalDateTime.now();
+    private String solicitante;
 
-    public AvisoViagem(Cartao cartao, LocalDate dataTerminoViagem, String destino, String ipSolicitante) {
+    public AvisoViagem(Cartao cartao, LocalDate dataTerminoViagem, String destino, String ipSolicitante, String solicitante) {
         this.cartao = cartao;
         this.dataTerminoViagem = dataTerminoViagem;
         this.destino = destino;
         this.ipSolicitante = ipSolicitante;
+        this.solicitante = solicitante;
     }
 
     public AvisoViagem(LocalDate validAte, String destino) {

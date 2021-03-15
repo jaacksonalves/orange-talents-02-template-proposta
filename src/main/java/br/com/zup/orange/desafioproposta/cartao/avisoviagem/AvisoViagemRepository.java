@@ -1,4 +1,4 @@
-package br.com.zup.orange.desafioproposta.cartao.aviso;
+package br.com.zup.orange.desafioproposta.cartao.avisoviagem;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

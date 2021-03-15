@@ -1,6 +1,7 @@
 package br.com.zup.orange.desafioproposta.cartao;
 
 
+import br.com.zup.orange.desafioproposta.cartao.avisoviagem.NovoAvisoViagemRequest;
 import br.com.zup.orange.desafioproposta.cartao.bloqueio.BloqueioCartaoRequest;
 import br.com.zup.orange.desafioproposta.cartao.bloqueio.BloqueioCartaoResponse;
 import br.com.zup.orange.desafioproposta.proposta.analise.AnalisePropostaRequest;
@@ -15,5 +16,8 @@ public interface ConectorCartao {
     ConectorCartaoResponse apiToCartaoResposta(AnalisePropostaRequest request);
 
     @PostMapping("/cartoes/{id}/bloqueios")
-    BloqueioCartaoResponse bloqueiaCartao(@PathVariable("id") String idCartao, BloqueioCartaoRequest request);
+    BloqueioCartaoResponse bloqueiaCartao(@PathVariable("id") String numeroCartao, BloqueioCartaoRequest request);
+
+    @PostMapping("/cartoes/{id}/avisos")
+    ConectorAvisoViagemResponse avisoViagem(@PathVariable("id") String numeroCartao, NovoAvisoViagemRequest request);
 }

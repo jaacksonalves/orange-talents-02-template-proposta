@@ -1,7 +1,7 @@
 package br.com.zup.orange.desafioproposta.cartao;
 
 import br.com.zup.orange.desafioproposta.biometria.Biometria;
-import br.com.zup.orange.desafioproposta.cartao.aviso.AvisoViagem;
+import br.com.zup.orange.desafioproposta.cartao.avisoviagem.AvisoViagem;
 import br.com.zup.orange.desafioproposta.cartao.bloqueio.Bloqueio;
 import br.com.zup.orange.desafioproposta.proposta.Proposta;
 
