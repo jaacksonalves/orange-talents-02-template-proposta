@@ -1,6 +1,6 @@
 package br.com.zup.orange.desafioproposta.cartao;
 
-import br.com.zup.orange.desafioproposta.cartao.integrados.*;
+import br.com.zup.orange.desafioproposta.cartao.bloqueio.BloqueioRequest;
 import br.com.zup.orange.desafioproposta.proposta.Proposta;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

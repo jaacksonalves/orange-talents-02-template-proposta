@@ -13,9 +13,10 @@ public interface PropostaRepository extends JpaRepository<Proposta, Long> {
     boolean existsByDocumento(String documento);
 
     //Consulta os 10 primeiros resultados, de propostas elegiveis e sem cartão cadastrado
-    @Lock(LockModeType.PESSIMISTIC_READ)
+    //@Lock(LockModeType.PESSIMISTIC_READ)
     List<Proposta> findFirst10ByStatusAndCartaoIsNull(PropostaStatus elegivel);
 
     Proposta findByEmail(String email);
 
+    List<Proposta> findByStatusAndCartaoIsNull(PropostaStatus elegivel);
 }

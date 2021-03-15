@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -42,14 +41,15 @@ public class PropostaController {
 
         try {
             AnalisePropostaResponse respostaAnalise = conectorAnaliseProposta.analiseStatus(new AnalisePropostaRequest(novaProposta));
-            novaProposta.setStatus(PropostaStatus.analiseToProposta(respostaAnalise.getStatusResultado()));
-
+            novaProposta.updateStatus(PropostaStatus.analiseToProposta(respostaAnalise.getStatusResultado()));
             return ResponseEntity.created(uri).build();
         } catch (FeignException e) {
-            novaProposta.setStatus(PropostaStatus.NAO_ELEGIVEL);
-
+            novaProposta.updateStatus(PropostaStatus.NAO_ELEGIVEL);
             return ResponseEntity.unprocessableEntity().location(uri).body("Proposta Não Elegível");
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ops! Erro invesperado :) ");
         }
+
     }
 
 

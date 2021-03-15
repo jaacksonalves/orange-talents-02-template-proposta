@@ -28,18 +28,15 @@ public class AtrelaCartaoAProposta {
     public void criaCartao() {
         List<Proposta> listaPropostaSemCartao = propostaRepository.findFirst10ByStatusAndCartaoIsNull(PropostaStatus.ELEGIVEL);
 
-        if (!listaPropostaSemCartao.isEmpty()) {
-
-            listaPropostaSemCartao.forEach(propostas -> {
-                Proposta proposta = listaPropostaSemCartao.get(0);
-                ConectorCartaoResponse cartaoResposta = conectorCartao.apiToCartaoResposta(new AnalisePropostaRequest(proposta));
-                Cartao cartao = cartaoResposta.toModel(proposta);
-                cartaoRepository.save(cartao);
-                proposta.setCartao(cartao);
-                propostaRepository.save(proposta);
-            });
-        }
-
-
+        listaPropostaSemCartao.forEach(propostas -> {
+            Proposta proposta = listaPropostaSemCartao.get(0);
+            ConectorCartaoResponse cartaoResposta = conectorCartao.apiToCartaoResposta(new AnalisePropostaRequest(proposta));
+            Cartao cartao = cartaoResposta.toModel(proposta);
+            cartaoRepository.save(cartao);
+            proposta.updateCartao(cartao);
+            propostaRepository.save(proposta);
+        });
     }
+
+
 }

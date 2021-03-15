@@ -1,7 +1,7 @@
 package br.com.zup.orange.desafioproposta.cartao;
 
 import br.com.zup.orange.desafioproposta.biometria.Biometria;
-import br.com.zup.orange.desafioproposta.cartao.integrados.*;
+import br.com.zup.orange.desafioproposta.cartao.bloqueio.Bloqueio;
 import br.com.zup.orange.desafioproposta.proposta.Proposta;
 
 import javax.persistence.*;
@@ -18,7 +18,7 @@ public class Cartao {
     private String numeroCartao;
     private LocalDateTime emitidoEm;
     private String titular;
-    @OneToMany(mappedBy = "cartao")
+    @OneToMany(cascade = CascadeType.MERGE)
     private List<Bloqueio> bloqueios;
     private BigDecimal limite;
     @OneToOne(mappedBy = "cartao")
@@ -42,5 +42,15 @@ public class Cartao {
 
     public Long getId() {
         return id;
+    }
+
+    public void toBloqueio(String ipCliente, String sistemaResponsavel) {
+        Bloqueio bloqueio = new Bloqueio(ipCliente, sistemaResponsavel, this);
+        this.bloqueios.add(bloqueio);
+
+    }
+
+    public String getNumeroCartao() {
+        return numeroCartao;
     }
 }

@@ -21,7 +21,10 @@ public class PropostaResponse {
         this.endereco = proposta.getEndereco();
         this.salario = proposta.getSalario();
         this.status = proposta.getStatus();
-        this.idCartao = proposta.getCartao().getId();
+        if (proposta.getCartao() != null) {
+            this.idCartao = proposta.getCartao().getId();
+        }
+
     }
 
 
@@ -67,7 +70,7 @@ public class PropostaResponse {
                 ", endereco='" + endereco + '\'' +
                 ", salario=" + salario +
                 ", status=" + status +
-                ", idCartao='" + idCartao + '\'' +
+                ", idCartao=" + idCartao +
                 '}';
     }
 }

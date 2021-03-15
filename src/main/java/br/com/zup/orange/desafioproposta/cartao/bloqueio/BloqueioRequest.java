@@ -1,4 +1,4 @@
-package br.com.zup.orange.desafioproposta.cartao.integrados;
+package br.com.zup.orange.desafioproposta.cartao.bloqueio;
 
 import java.time.LocalDateTime;
 

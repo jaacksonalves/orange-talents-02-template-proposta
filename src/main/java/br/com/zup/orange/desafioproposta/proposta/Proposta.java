@@ -11,7 +11,6 @@ public class Proposta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(unique = true)
     private String documento;
     private String email;
@@ -22,6 +21,8 @@ public class Proposta {
     private PropostaStatus status;
     @OneToOne
     private Cartao cartao;
+    public String numeroCartao;
+
 
 
     public Proposta(String documento, String email, String nome, String endereco, BigDecimal salario) {
@@ -64,15 +65,20 @@ public class Proposta {
         return status;
     }
 
-    public void setStatus(PropostaStatus status) {
+    public void updateStatus(PropostaStatus status) {
         this.status = status;
     }
 
-    public void setCartao(Cartao cartao) {
+    public void updateCartao(Cartao cartao) {
         this.cartao = cartao;
+        this.numeroCartao = cartao.getNumeroCartao();
     }
 
     public Cartao getCartao() {
         return cartao;
+    }
+
+    public String getNumeroCartao() {
+        return numeroCartao;
     }
 }
