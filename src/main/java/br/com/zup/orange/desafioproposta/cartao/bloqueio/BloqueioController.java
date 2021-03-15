@@ -32,9 +32,13 @@ public class BloqueioController {
                                             HttpServletRequest servletRequest) {
 
         Cartao cartao = cartaoRepository.findById(idCartao).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartão não encontrado"));
-        String numeroCartao = cartao.getNumeroCartao();
 
+        String numeroCartao = cartao.getNumeroCartao();
         String ipCliente = servletRequest.getRemoteAddr();
+
+        if (bloqueioRepository.existsByCartao_IdAndBloqueioAtivoIsTrue(cartao.getId())) {
+            return ResponseEntity.status(422).body("Cartão já bloqueado");
+        }
 
         try {
             BloqueioCartaoResponse bloqueioCartaoResponse = conectorCartao.bloqueiaCartao(numeroCartao, request);
@@ -44,7 +48,7 @@ public class BloqueioController {
             }
         } catch (FeignException e) {
             return ResponseEntity.unprocessableEntity().body("Cartão já bloqueado");
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ops! Erro inesperado");
         }
 
