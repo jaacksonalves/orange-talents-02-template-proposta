@@ -3,11 +3,13 @@ package br.com.zup.orange.desafioproposta.cartao;
 import br.com.zup.orange.desafioproposta.biometria.Biometria;
 import br.com.zup.orange.desafioproposta.cartao.avisoviagem.AvisoViagem;
 import br.com.zup.orange.desafioproposta.cartao.bloqueio.Bloqueio;
+import br.com.zup.orange.desafioproposta.cartao.carteira.Carteira;
 import br.com.zup.orange.desafioproposta.proposta.Proposta;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,14 +22,16 @@ public class Cartao {
     private LocalDateTime emitidoEm;
     private String titular;
     @OneToMany(cascade = CascadeType.MERGE)
-    private List<Bloqueio> bloqueios;
+    private List<Bloqueio> bloqueios = new ArrayList<>();
     private BigDecimal limite;
     @OneToOne(mappedBy = "cartao")
     private Proposta proposta;
     @OneToMany(mappedBy = "cartao")
-    private List<Biometria> biometrias;
+    private List<Biometria> biometrias = new ArrayList<>();
     @OneToMany(mappedBy = "cartao")
-    private List<AvisoViagem> avisosViagem;
+    private List<AvisoViagem> avisosViagem = new ArrayList<>();
+    @OneToMany(mappedBy = "cartao")
+    private List<Carteira> carteiras = new ArrayList<>();
 
 
     public Cartao(String numeroCartao, LocalDateTime emitidoEm, String titular, List<Bloqueio> bloqueios, BigDecimal limite, Proposta proposta) {

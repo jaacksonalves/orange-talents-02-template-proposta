@@ -4,6 +4,7 @@ package br.com.zup.orange.desafioproposta.cartao;
 import br.com.zup.orange.desafioproposta.cartao.avisoviagem.NovoAvisoViagemRequest;
 import br.com.zup.orange.desafioproposta.cartao.bloqueio.BloqueioCartaoRequest;
 import br.com.zup.orange.desafioproposta.cartao.bloqueio.BloqueioCartaoResponse;
+import br.com.zup.orange.desafioproposta.cartao.carteira.NovaCarteiraRequest;
 import br.com.zup.orange.desafioproposta.proposta.analise.AnalisePropostaRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,4 +21,7 @@ public interface ConectorCartao {
 
     @PostMapping("/cartoes/{id}/avisos")
     ConectorAvisoViagemResponse avisoViagem(@PathVariable("id") String numeroCartao, NovoAvisoViagemRequest request);
+
+    @PostMapping("/cartoes/{id}/carteiras")
+    ConectorCarteiraResponse carteiras(@PathVariable("id") String numeroCartao, NovaCarteiraRequest request);
 }

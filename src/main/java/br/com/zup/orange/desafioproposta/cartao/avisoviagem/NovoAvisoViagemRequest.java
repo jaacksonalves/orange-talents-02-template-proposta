@@ -23,7 +23,7 @@ public class NovoAvisoViagemRequest {
         return validoAte;
     }
 
-    public AvisoViagem toModel(Cartao cartao, String solicitante, String ipSolicitante) {
-        return new AvisoViagem(cartao, validoAte, destino, ipSolicitante, solicitante);
+    public AvisoViagem toModel(Cartao cartao, String ipSolicitante, String agent) {
+        return new AvisoViagem(cartao, validoAte, destino, ipSolicitante, agent);
     }
 }

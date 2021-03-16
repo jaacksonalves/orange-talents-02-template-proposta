@@ -19,14 +19,14 @@ public class AvisoViagem {
     private String ipSolicitante;
     @Column(updatable = false)
     private final LocalDateTime instanteAviso = LocalDateTime.now();
-    private String solicitante;
+    private String agent;
 
     public AvisoViagem(Cartao cartao, LocalDate dataTerminoViagem, String destino, String ipSolicitante, String solicitante) {
         this.cartao = cartao;
         this.dataTerminoViagem = dataTerminoViagem;
         this.destino = destino;
         this.ipSolicitante = ipSolicitante;
-        this.solicitante = solicitante;
+        this.agent = solicitante;
     }
 
     public AvisoViagem(LocalDate validAte, String destino) {
