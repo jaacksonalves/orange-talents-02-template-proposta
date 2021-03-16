@@ -30,9 +30,6 @@ public class CarteiraController {
     public ResponseEntity<?> cadastra(@PathVariable("idCartao") Long idCartao,
                                       @Valid @RequestBody NovaCarteiraRequest request,
                                       UriComponentsBuilder uriComponentsBuilder) {
-        if (carteiraRepository.existsByEmissorCarteira(request.getCarteira())) {
-            return ResponseEntity.unprocessableEntity().body("Carteira já cadastrada");
-        }
 
         Cartao cartao = cartaoRepository.findById(idCartao)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartão não encontrado"));

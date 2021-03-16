@@ -24,7 +24,7 @@ public class AtrelaCartaoAProposta {
 
     //Verifica se propostas elegíveis já tem cartão cadastrado, caso não tenha, cadastra um cartão para ela.
     @Transactional
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 10000)
     public void criaCartao() {
         List<Proposta> listaPropostaSemCartao = propostaRepository.findFirst10ByStatusAndCartaoIsNull(PropostaStatus.ELEGIVEL);
 

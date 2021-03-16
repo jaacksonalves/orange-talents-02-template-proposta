@@ -1,6 +1,7 @@
 package br.com.zup.orange.desafioproposta.proposta;
 
 import br.com.zup.orange.desafioproposta.cartao.Cartao;
+import org.springframework.security.crypto.encrypt.Encryptors;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -24,9 +25,8 @@ public class Proposta {
     public String numeroCartao;
 
 
-
     public Proposta(String documento, String email, String nome, String endereco, BigDecimal salario) {
-        this.documento = documento;
+        this.documento = Encryptors.text("abcabc", "cbacba").encrypt(documento);
         this.email = email;
         this.nome = nome;
         this.endereco = endereco;
